@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "goit-python-web-11"
+version = "0.1.0"
+description = ""
+authors = ["Oleksii Kukhariev <65445718+flatline-code@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "goit_python_web_11"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.95.1"
+uvicorn = {extras = ["standard"], version = "^0.21.1"}
+sqlalchemy = "^2.0.10"
+psycopg2-binary = "^2.9.6"
+alembic = "^1.10.4"
+pydantic = {extras = ["email"], version = "^1.10.7"}
+
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
