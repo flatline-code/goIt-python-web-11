@@ -46,3 +46,10 @@ async def find_contacts_by_info(info: str, db: Session = Depends(get_db)):
     if contacts is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contacts not found")
     return contacts
+
+@router.get("/birthday/{days}", response_model=List[ContactResponse])
+async def find_birthday_per_week(days: int, db: Session = Depends(get_db)):
+    contacts = await repository_contacts.get_birthday_per_week(days, db)
+    if contacts is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contacts not found")
+    return contacts

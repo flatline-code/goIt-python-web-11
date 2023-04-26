@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 from src.database.models import Contact
@@ -8,6 +9,7 @@ from src.schemas import ContactModel
 async def get_contacts(skip: int, limit: int, db: Session) -> List[Contact]:
     return db.query(Contact).offset(skip).limit(limit).all()
 
+
 async def create_contact(body: ContactModel, db: Session) -> Contact:
     contact = Contact(**body.dict())
     db.add(contact)
@@ -15,8 +17,10 @@ async def create_contact(body: ContactModel, db: Session) -> Contact:
     db.refresh(contact)
     return contact
 
+
 async def get_contact(contact_id: int, db: Session) -> Contact:
     return db.query(Contact).filter(Contact.id == contact_id).first()
+
 
 async def update_contact(contact_id: int, body: ContactModel, db: Session) -> Contact | None:
     contact = db.query(Contact).filter(Contact.id == contact_id).first()
@@ -29,12 +33,14 @@ async def update_contact(contact_id: int, body: ContactModel, db: Session) -> Co
         db.commit()
     return contact
 
+
 async def remove_contact(contact_id: int, db: Session) -> Contact | None:
     contact = db.query(Contact).filter(Contact.id == contact_id).first()
     if contact:
         db.delete(contact)
         db.commit()
     return contact
+
 
 async def get_contacts_by_info(info: str, db: Session) -> List[Contact]:
     response = []
@@ -50,5 +56,23 @@ async def get_contacts_by_info(info: str, db: Session) -> List[Contact]:
     if info_by_email:
         for contact in info_by_email:
             response.append(contact)
-            
     return response
+
+async def get_birthday_per_week(days: int, db: Session):
+    response = []
+    all_contacts = db.query(Contact).all()
+    today = datetime.now().date()
+    delta = timedelta(days=days)
+
+    for contact in all_contacts:
+        contact_next_birthday = datetime(year=today.year,
+                                         month=contact.birthday.month,
+                                         day=contact.birthday.day).date()
+        if contact_next_birthday < today:
+            continue
+        if contact_next_birthday - today > delta:
+            continue
+
+        response.append(contact)
+    return response
+
